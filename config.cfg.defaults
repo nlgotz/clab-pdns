@@ -1,0 +1,5 @@
+SERVER=
+DNS_SERVER=localhost
+APIKEY=
+DOMAIN=
+ADD_IPV6=false
