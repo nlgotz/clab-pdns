@@ -1,6 +1,7 @@
 #!/bin/bash
 
 SERVER=''
+DNS_SERVER='localhost'
 APIKEY=''
 DOMAIN=''
 ADD_IPV6=false
@@ -9,7 +10,6 @@ HOSTNAME=$(hostname)
 
 # Verify that needed tools are on the computer (jq, curl, containerlab)
 if ! [ -x "$(command -v jq)" ] || ! [ -x "$(command -v curl)" ] || ! [ -x "$(command -v containerlab)" ]; then
-  echo "Need to install some packages"
   # First figure out if it's YUM or DEB
   UPDATER=""
   if [ -f /etc/redhat-release ]; then
@@ -34,6 +34,7 @@ if ! [ -x "$(command -v jq)" ] || ! [ -x "$(command -v curl)" ] || ! [ -x "$(com
     echo "Installing containerlab"
     sudo bash -c "$(curl -sL https://get-clab.srlinux.dev)"
   fi
+
 fi
 
 # Get all of the running devices in containerlab
@@ -46,7 +47,7 @@ CONTAINER_IDS=$(jq ".[] | .container_id" <<< $ALL_CLABS)
 DNS_CONTAINER_IDS=""
 
 # Drop all lab A/AAAA records
-EXISTING_RECORDS=`curl -H 'Content-Type: application/json' -s -H "X-API-Key: ${APIKEY}" http://${SERVER}/api/v1/servers/localhost/zones/${DOMAIN} | jq -r ".rrsets[] | select(.type == (\"A\",\"AAAA\"))"`
+EXISTING_RECORDS=`curl -H 'Content-Type: application/json' -s -H "X-API-Key: ${APIKEY}" http://${SERVER}/api/v1/servers/${DNS_SERVER}/zones/${DOMAIN} | jq -r ".rrsets[] | select(.type == (\"A\",\"AAAA\"))"`
 
 # Only delete the records if there are any existing A/AAAA records
 if [ -n "$EXISTING_RECORDS" ]; then
@@ -74,7 +75,7 @@ if [ -n "$EXISTING_RECORDS" ]; then
   
   # Delete the removed A/AAAA records if there are updates
   if [ "$DELETE_RECORDS" != "{\"rrsets\":[]}" ]; then
-    curl -s -H 'Content-Type: application/json' -X PATCH --data "${DELETE_RECORDS}" -H "X-API-Key: ${APIKEY}" http://${SERVER}/api/v1/servers/localhost/zones/${DOMAIN} | jq
+    curl -s -H 'Content-Type: application/json' -X PATCH --data "${DELETE_RECORDS}" -H "X-API-Key: ${APIKEY}" http://${SERVER}/api/v1/servers/${DNS_SERVER}/zones/${DOMAIN} | jq
   fi
 fi
 
@@ -159,5 +160,5 @@ do
 done < "$input"
 
 if [ "$NEW_RECORDS" != "{\"rrsets\":[]}" ]; then
-  curl -s -H 'Content-Type: application/json' -X PATCH --data "${NEW_RECORDS}" -H "X-API-Key: ${APIKEY}" http://${SERVER}/api/v1/servers/localhost/zones/${DOMAIN} | jq .
+  curl -s -H 'Content-Type: application/json' -X PATCH --data "${NEW_RECORDS}" -H "X-API-Key: ${APIKEY}" http://${SERVER}/api/v1/servers/${DNS_SERVER}/zones/${DOMAIN} | jq .
 fi
