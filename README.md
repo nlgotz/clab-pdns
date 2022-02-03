@@ -2,7 +2,7 @@
 
 The clab-pdns.sh script will create DNS records for containerlab nodes. It can do this by either manually executing the script or setting up incron to watch the /etc/hosts file for updates
 
-This assumes that the webserver and API are enabled on the PowerDNS server.
+This assumes that the webserver and API are enabled on the PowerDNS server. The other option is to run [PowerDNS-Admin](https://github.com/ngoduykhanh/PowerDNS-Admin) and use that API. The API works the same between the 2 for this use case.
 
 ## Setup
 
