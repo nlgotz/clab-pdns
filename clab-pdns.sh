@@ -1,10 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-SERVER=''
-DNS_SERVER='localhost'
-APIKEY=''
-DOMAIN=''
-ADD_IPV6=false
+source config.shlib;
+
+SERVER="$(config_get SERVER)"
+DNS_SERVER="$(config_get DNS_SERVER)"
+APIKEY="$(config_get APIKEY)"
+DOMAIN="$(config_get DOMAIN)"
+ADD_IPV6="$(config_get ADD_IPV6)"
 
 HOSTNAME=$(hostname)
 
