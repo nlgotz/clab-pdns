@@ -28,7 +28,11 @@ ADD_IPV6=false
 sudo clab-pdns.sh
 ```
 
-### Automatic DNS record updates
+### Automatic DNS record updates - wrapper script
+
+It should be possible to create a wrapper script for containerlab that also runs this script to create DNS records.
+
+### Automatic DNS record updates - watching /etc/hosts
 
 This version requires that incron is installed on the containerlab server.
 
