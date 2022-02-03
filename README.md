@@ -8,17 +8,17 @@ This assumes that the webserver and API are enabled on the PowerDNS server. The 
 
 This should be setup on the containerlab server
 
-### Updates needed
+### Config File
 
-Right now, all the variables are hardcoded into the script. You'll need to update the SERVER, DNS_SERVER, APIKEY, DOMAIN, and ADD_IPV6 variables to match your environment. The server and APIKEY should match what is in PowerDNS. Assuming you are running the PowerDNS webserver on the default port in the config (8081), that will be needed as part of the SERVER
+Copy the config.cfg.defaults file to config.cfg and update with your information.
 
 #### Sample
 
 ```bash
-SERVER='dns1.mysite.internal:8081'
-DNS_SERVER='localhost'
-APIKEY='changeme'
-DOMAIN='lab.mysite.internal'
+SERVER=dns1.mysite.internal:8081
+DNS_SERVER=localhost
+APIKEY=changeme
+DOMAIN=lab.mysite.internal
 ADD_IPV6=false
 ```
 
