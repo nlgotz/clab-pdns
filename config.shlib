@@ -3,9 +3,10 @@ config_read_file() {
 }
 
 config_get() {
-    val="$(config_read_file config.cfg "${1}")";
+    SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+    val="$(config_read_file $SCRIPT_DIR/config.cfg "${1}")";
     if [ "${val}" = "__UNDEFINED__" ]; then
-        val="$(config_read_file config.cfg.defaults "${1}")";
+        val="$(config_read_file $SCRIPT_DIR/config.cfg.defaults "${1}")";
     fi
     printf -- "%s" "${val}";
 }

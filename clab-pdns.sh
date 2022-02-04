@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-source config.shlib;
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+source $SCRIPT_DIR/config.shlib;
 
 SERVER="$(config_get SERVER)"
 DNS_SERVER="$(config_get DNS_SERVER)"
@@ -43,14 +45,15 @@ fi
 ALL_CLABS=$(containerlab inspect --all -f json)
 
 # Get a list of just the container IDs that will be used to check if a record currently exists
-CONTAINER_IDS=$(jq ".[] | .container_id" <<< $ALL_CLABS)
-
+if [[ $ALL_CLABS != *"no containers found"* ]]; then
+  CONTAINER_IDS=$(jq ".[] | .container_id" <<< $ALL_CLABS)
+else
+  CONTAINER_IDS=""
+fi
 # Empty - will get filled in with existing records that match
 DNS_CONTAINER_IDS=""
-
 # Drop all lab A/AAAA records
 EXISTING_RECORDS=`curl -H 'Content-Type: application/json' -s -H "X-API-Key: ${APIKEY}" http://${SERVER}/api/v1/servers/${DNS_SERVER}/zones/${DOMAIN} | jq -r ".rrsets[] | select(.type == (\"A\",\"AAAA\"))"`
-
 # Only delete the records if there are any existing A/AAAA records
 if [ -n "$EXISTING_RECORDS" ]; then
   DELETE_RECORDS='{"rrsets":[]}'
@@ -74,7 +77,7 @@ if [ -n "$EXISTING_RECORDS" ]; then
       fi
     fi
   done <<< "$(jq -c '.' <<< $EXISTING_RECORDS)"
-  
+
   # Delete the removed A/AAAA records if there are updates
   if [ "$DELETE_RECORDS" != "{\"rrsets\":[]}" ]; then
     curl -s -H 'Content-Type: application/json' -X PATCH --data "${DELETE_RECORDS}" -H "X-API-Key: ${APIKEY}" http://${SERVER}/api/v1/servers/${DNS_SERVER}/zones/${DOMAIN} | jq
